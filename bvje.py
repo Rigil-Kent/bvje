@@ -31,6 +31,7 @@ def user(username):
     return render_template('members.html', username=username)
 
 
+@app.route('/repertoire')
 def repertoire():
     return render_template('repertoire.html')
 
@@ -43,6 +44,7 @@ def shop():
     return render_template('shop.html')
 
 
+@app.route('/contact')
 def contact():
     return render_template('contact.html')
 

@@ -1,10 +1,10 @@
 {% extends 'core/nav.html' %}
-
+<div class="bg"></div>
 {% block content %}
 <div class="container"> 
   <img src="{{ url_for('static', filename='bvje.JPG') }}" width=100%>
   <div class="jumbotron">
-      <p>The Baltimore Vocal Jazz Ensemble is a unique group of vocalists dedicated to providing a capella entertainment in  an eclectic variety of styes in a wide range of venues.  Under the direction of Joe Mannherz, members travel from all over the mid-Atlantic region to sing ballads and swing from the 40's to contemporary jazz and pop of the present. From  "Basie and Cole" to the "Beatles and Billy Joel", the ensemble has entertained audiences at Longwood Gardens in Pa. to the State House in Annapolis; from private birthday parties and weddings to "Bill Gates" at the Willard Hotel in Washington, DC.
+      <p><strong>The Baltimore Vocal Jazz Ensemble</strong> is a unique group of vocalists dedicated to providing a capella entertainment in an eclectic variety of styes in a wide range of venues.  Under the direction of <em>Joe Mannherz</em>, members travel from all over the <em>mid-Atlantic</em> region to sing ballads and swing from the 40's to contemporary jazz and pop of the present. From  <em>"Basie and Cole"</em> to the <em>"Beatles and Billy Joel"</em>, the ensemble has entertained audiences at Longwood Gardens in Pa. to the State House in Annapolis; from private birthday parties and weddings to <em>"Bill Gates"</em> at the Willard Hotel in Washington, DC.
 
       </p>
       <p>find out more about 
@@ -16,10 +16,9 @@
           <li>or just purchase one of several CD's recorded by the ensemble.
 
         </ul>
-        <p>A list of our current repertoire is available as well as an extensive photo gallery and video/audio page.</p>
+        <p>A list of our current <a href=" {{ url_for('repertoire') }} ">repertoire</a> is available as well as an extensive photo gallery and video/audio page.</p>
              
-        <p>Enjoy your tour through our site and come and join us at one of our weekly practices in the Baltimore area. Map and directions are available under the "Contacts" 
-            window.</p>
+        <p>Enjoy your tour through our site and come and join us at one of our weekly practices in the Baltimore area. Map and directions are available under <a href=" {{ url_for('contact') }} ">Contacts</a>.</p>
         </p>
   </div>
 </div>
