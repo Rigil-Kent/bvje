@@ -1,6 +1,11 @@
 {% extends 'core/nav.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
 {% block content %}
 <div class="container">
+    <div class="page-header">
+      <p>he BVJE accepts bookings up to one year in advance, and the number of performers is flexible and can vary according to your needs.</p>  
+      <p>Pricing varies depending on concert length, travel, etc.  Actual concert fees would be determined after discussion of concert parameters.</p>
+    </div>
     <div class="page-header">
         {{ wtf.quick_form(form) }}
     </div>

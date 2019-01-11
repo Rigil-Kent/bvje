@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Email, EqualTo
 
 
 app = Flask(__name__)
-app.config['SECRET KEY'] = 'a cappella'
+app.config['SECRET_KEY'] = 'a cappella'
 bootstrap =  Bootstrap(app)
 moment = Moment(app)
 
@@ -76,7 +76,8 @@ def shop():
 
 @app.route('/contact')
 def contact():
-    return render_template('contact.html')
+    form = ContactForm()
+    return render_template('contact.html', form=form)
 
 
 @app.route('/signup')
