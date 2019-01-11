@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField,SelectMultipleField 
+from wtforms import StringField, TextAreaField, PasswordField, SubmitField,SelectMultipleField 
 from wtforms.validators import DataRequired, Email, EqualTo
 
 
@@ -18,7 +18,7 @@ class SignupForm(FlaskForm):
     passwd = PasswordField('Password: ', validators=[DataRequired()])
     passrepeat = PasswordField('Repeat Password: ', validators=[EqualTo(passwd)])
     voice = SelectMultipleField('Voice: ', choices=[('soprano', 'soprano'), ('alto', 'alto'), ('tenor', 'tenor'), ('baritone', 'baritone'), ('bass', 'bass')], validators=[DataRequired()])
-
+    
     submit = SubmitField('Register')
 
 
@@ -27,6 +27,7 @@ class ContactForm(FlaskForm):
     email = StringField('Email: ', validators=[Email()])
     phone = StringField('Phone: ', validators=[DataRequired()])
     request = StringField('Song Request(s): ', validators=[DataRequired()])
+    other = TextAreaField('Additional information: ')
     submit = SubmitField('Submit')
 
 
@@ -82,7 +83,8 @@ def contact():
 
 @app.route('/signup')
 def signup():
-    return render_template('signup.html')
+    form = SignupForm()
+    return render_template('signup.html', form=form)
 
 
 def admin():
