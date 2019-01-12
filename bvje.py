@@ -1,15 +1,27 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, flash, redirect
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, SubmitField,SelectMultipleField 
+from wtforms import StringField, TextAreaField, PasswordField, SubmitField, SelectMultipleField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo
+from werkzeug.utils import secure_filename
+
 
 
 app = Flask(__name__)
+UPLOAD_FOLDER = ''
+FORBIDDEN_EXTENSIONS = set(['exe'])
+ALLOWED_EXTENSISONS = set(['mp3', 'aac', 'wav', 'ogg', 'flac'])
 app.config['SECRET_KEY'] = 'a cappella'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 bootstrap =  Bootstrap(app)
 moment = Moment(app)
+
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSISONS
+
 
 
 class SignupForm(FlaskForm):
@@ -17,8 +29,9 @@ class SignupForm(FlaskForm):
     email = StringField('Email: ', validators=[Email()])
     passwd = PasswordField('Password: ', validators=[DataRequired()])
     passrepeat = PasswordField('Repeat Password: ', validators=[EqualTo(passwd)])
-    voice = SelectMultipleField('Voice: ', choices=[('soprano', 'soprano'), ('alto', 'alto'), ('tenor', 'tenor'), ('baritone', 'baritone'), ('bass', 'bass')], validators=[DataRequired()])
-    
+    voice = SelectMultipleField('Voice: ', choices=[('soprano', 'Soprano'), ('alto', 'Alto'), ('tenor', 'Tenor'), ('baritone', 'Baritone'), ('bass', 'Bass')], validators=[DataRequired()])
+    file = FileField('Attach MP3: ', )
+    other = TextAreaField('Additional information: ')
     submit = SubmitField('Register')
 
 
@@ -81,8 +94,10 @@ def contact():
     return render_template('contact.html', form=form)
 
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    
+
     form = SignupForm()
     return render_template('signup.html', form=form)
 
