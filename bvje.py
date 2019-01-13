@@ -84,6 +84,7 @@ def gallery():
     return render_template('gallery.html')
 
 
+@app.route('/shop')
 def shop():
     return render_template('shop.html')
 
