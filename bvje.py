@@ -1,27 +1,54 @@
-from flask import Flask, render_template, request, url_for, flash, redirect
+import os
+from flask import Flask, render_template, request, url_for, flash, redirect, session
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, SubmitField, SelectMultipleField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
 
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 UPLOAD_FOLDER = ''
 FORBIDDEN_EXTENSIONS = set(['exe'])
 ALLOWED_EXTENSISONS = set(['mp3', 'aac', 'wav', 'ogg', 'flac'])
 app.config['SECRET_KEY'] = 'a cappella'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 bootstrap =  Bootstrap(app)
 moment = Moment(app)
+db = SQLAlchemy(app)
 
 
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSISONS
 
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    users = db.relationship('User', backref='role')
+
+    def __repr__(self):
+        return '<Role {}>'.format(self.name)
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+   
+
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
 
 
 class SignupForm(FlaskForm):
@@ -89,18 +116,35 @@ def shop():
     return render_template('shop.html')
 
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
     form = ContactForm()
-    return render_template('contact.html', form=form)
+
+    if form.validate_on_submit():
+        session['name'] = form.name.data 
+        session['email'] = form.email.data
+        session['phone'] = form.phone.data
+        session['request'] = form.request.data
+        session['other'] = form.other.data
+        return redirect(url_for('index'))
+
+    return render_template('contact.html', form=form, name=session.get('name'), email=session.get('email'), phone=session.get('phone'), request=session.get('request'), other=session.get('other'))
 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    
-
     form = SignupForm()
-    return render_template('signup.html', form=form)
+
+    if form.validate_on_submit():
+        session['username'] = form.username.data
+        session['email'] = form.email.data
+        session['password'] = form.password.data
+        session['repeatpass'] = form.repeatpass.data
+        session['voice'] = form.voice.data
+        session['mp3'] = form.mp3.data
+        session['info'] = form.info.data
+
+    return render_template('signup.html', form=form, username=session.get('username'), email=session.get('email'), password=session.get('password'), repeatpass=session.get('repeatpass'), voice=session.get('voice'), info=session.get('info'))
 
 
 def admin():
