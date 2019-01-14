@@ -7,6 +7,9 @@ from wtforms import StringField, TextAreaField, PasswordField, SubmitField, Sele
 from wtforms.validators import DataRequired, Email, EqualTo
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+from flask_migrate import Migrate
+from flask_mail import Mail
+
 
 
 
@@ -19,9 +22,16 @@ app.config['SECRET_KEY'] = 'a cappella'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 bootstrap =  Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+mail = Mail(app)
 
 
 
@@ -33,7 +43,7 @@ class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    users = db.relationship('User', backref='role')
+    users = db.relationship('User', backref='role', lazy='dynamic')
 
     def __repr__(self):
         return '<Role {}>'.format(self.name)
@@ -136,15 +146,27 @@ def signup():
     form = SignupForm()
 
     if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None:
+            user = User(username=form.username.data)
+            db.session.add(user)
+            db.session.commit()
+            session['known'] = False
+        else:
+            session['known'] = True
         session['username'] = form.username.data
-        session['email'] = form.email.data
+        form.username.data = ''
+        return redirect(url_for('index'))
+
+
+        '''session['email'] = form.email.data
         session['password'] = form.password.data
         session['repeatpass'] = form.repeatpass.data
         session['voice'] = form.voice.data
         session['mp3'] = form.mp3.data
-        session['info'] = form.info.data
+        session['info'] = form.info.data'''
 
-    return render_template('signup.html', form=form, username=session.get('username'), email=session.get('email'), password=session.get('password'), repeatpass=session.get('repeatpass'), voice=session.get('voice'), info=session.get('info'))
+    return render_template('signup.html', form=form, username=session.get('username'), email=session.get('email'), password=session.get('password'), repeatpass=session.get('repeatpass'), voice=session.get('voice'), info=session.get('info'), known=session.get('known', False))
 
 
 def admin():
