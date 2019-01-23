@@ -3,13 +3,11 @@ from threading import Thread
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, SubmitField, SelectMultipleField, FileField
-from wtforms.validators import DataRequired, Email, EqualTo
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from flask_migrate import Migrate
 from flask_mail import Mail, Message
+from forms import ContactForm, SignupForm
 
 
 
@@ -81,24 +79,7 @@ class User(db.Model):
         return '<User {}>'.format(self.username)
 
 
-class SignupForm(FlaskForm):
-    username = StringField('Username: ', validators=[DataRequired()])
-    email = StringField('Email: ', validators=[Email()])
-    passwd = PasswordField('Password: ', validators=[DataRequired()])
-    passrepeat = PasswordField('Repeat Password: ', validators=[EqualTo(passwd)])
-    voice = SelectMultipleField('Voice: ', choices=[('soprano', 'Soprano'), ('alto', 'Alto'), ('tenor', 'Tenor'), ('baritone', 'Baritone'), ('bass', 'Bass')], validators=[DataRequired()])
-    file = FileField('Attach MP3: ', )
-    other = TextAreaField('Additional information: ')
-    submit = SubmitField('Register')
 
-
-class ContactForm(FlaskForm):
-    name = StringField('Name: ', validators=[DataRequired()])
-    email = StringField('Email: ', validators=[Email()])
-    phone = StringField('Phone: ', validators=[DataRequired()])
-    request = StringField('Song Request(s): ', validators=[DataRequired()])
-    other = TextAreaField('Additional information: ')
-    submit = SubmitField('Submit')
 
 
 
